@@ -1,0 +1,9 @@
+version: '3'
+
+tasks:
+  fetch-data:
+    cmds:
+      - python src/fetch_data.py
+  embed:
+    cmds:
+      - python src/embed.py --model_name=Snowflake/snowflake-arctic-embed-m --n_components=64
