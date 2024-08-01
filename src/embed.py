@@ -13,7 +13,7 @@ def reduce_dims(embeddings, n_components: int) -> np.ndarray:
 
 
 def embed(model_name: str, docs: List[str]) -> np.ndarray:
-    model = SentenceTransformer(model_name, trust_remote_code=True)
+    model = SentenceTransformer(model_name)
     embeddings = model.encode(docs)
     return np.vstack(embeddings)
 
@@ -25,7 +25,7 @@ def main(model_name: str, n_components: int):
     Args:
         model_name (str): _description_
     """
-    df = pl.read_parquet("data/20newsgroups.parquet")
+    df = pl.read_parquet("data/bbc.parquet")
     docs = df["text"].to_list()
     embeddings = embed(model_name, docs)
     reduced = reduce_dims(embeddings, n_components)
