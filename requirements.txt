@@ -4,8 +4,16 @@
 #
 #    pip-compile
 #
+aiohttp==3.9.5
+    # via
+    #   datasets
+    #   fsspec
+aiosignal==1.3.1
+    # via aiohttp
 asciitree==0.3.3
     # via zarr
+attrs==23.2.0
+    # via aiohttp
 build==1.2.1
     # via pip-tools
 certifi==2024.6.2
@@ -14,26 +22,41 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via pip-tools
+datasets==2.20.0
+    # via -r requirements.in
+dill==0.3.8
+    # via
+    #   datasets
+    #   multiprocess
 fasteners==0.19
     # via zarr
 filelock==3.15.4
     # via
+    #   datasets
     #   huggingface-hub
     #   torch
     #   transformers
 fire==0.6.0
     # via -r requirements.in
-fsspec==2024.6.0
+frozenlist==1.4.1
     # via
+    #   aiohttp
+    #   aiosignal
+fsspec[http]==2024.5.0
+    # via
+    #   datasets
     #   huggingface-hub
     #   torch
 huggingface-hub==0.23.4
     # via
+    #   datasets
     #   sentence-transformers
     #   tokenizers
     #   transformers
 idna==3.7
-    # via requests
+    # via
+    #   requests
+    #   yarl
 jinja2==3.1.4
     # via torch
 joblib==1.4.2
@@ -48,6 +71,12 @@ markupsafe==2.1.5
     # via jinja2
 mpmath==1.3.0
     # via sympy
+multidict==6.0.5
+    # via
+    #   aiohttp
+    #   yarl
+multiprocess==0.70.16
+    # via datasets
 networkx==3.3
     # via torch
 numba==0.60.0
@@ -56,10 +85,14 @@ numba==0.60.0
     #   umap-learn
 numcodecs==0.12.1
     # via zarr
-numpy==2.0.0
+numpy==1.26.4
     # via
+    #   -r requirements.in
+    #   datasets
     #   numba
     #   numcodecs
+    #   pandas
+    #   pyarrow
     #   scikit-learn
     #   scipy
     #   sentence-transformers
@@ -69,28 +102,41 @@ numpy==2.0.0
 packaging==24.1
     # via
     #   build
+    #   datasets
     #   huggingface-hub
     #   transformers
+pandas==2.2.2
+    # via datasets
 pillow==10.3.0
     # via sentence-transformers
 pip-tools==7.4.1
     # via -r requirements.in
 polars==0.20.31
     # via -r requirements.in
+pyarrow==16.1.0
+    # via datasets
+pyarrow-hotfix==0.6
+    # via datasets
 pynndescent==0.5.13
     # via umap-learn
 pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
+python-dateutil==2.9.0.post0
+    # via pandas
+pytz==2024.1
+    # via pandas
 pyyaml==6.0.1
     # via
+    #   datasets
     #   huggingface-hub
     #   transformers
 regex==2024.5.15
     # via transformers
 requests==2.32.3
     # via
+    #   datasets
     #   huggingface-hub
     #   transformers
 safetensors==0.4.3
@@ -110,7 +156,9 @@ scipy==1.13.1
 sentence-transformers==3.0.1
     # via -r requirements.in
 six==1.16.0
-    # via fire
+    # via
+    #   fire
+    #   python-dateutil
 sympy==1.12.1
     # via torch
 termcolor==2.4.0
@@ -123,6 +171,7 @@ torch==2.3.1
     # via sentence-transformers
 tqdm==4.66.4
     # via
+    #   datasets
     #   huggingface-hub
     #   sentence-transformers
     #   transformers
@@ -133,12 +182,18 @@ typing-extensions==4.12.2
     # via
     #   huggingface-hub
     #   torch
+tzdata==2024.1
+    # via pandas
 umap-learn==0.5.6
     # via -r requirements.in
 urllib3==2.2.2
     # via requests
 wheel==0.43.0
     # via pip-tools
+xxhash==3.4.1
+    # via datasets
+yarl==1.9.4
+    # via aiohttp
 zarr==2.18.2
     # via -r requirements.in
 

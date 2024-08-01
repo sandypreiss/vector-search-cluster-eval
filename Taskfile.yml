@@ -7,3 +7,6 @@ tasks:
   embed:
     cmds:
       - python src/embed.py --model_name=Snowflake/snowflake-arctic-embed-m --n_components=64
+  cluster:
+    cmds:
+      - python src/cluster.py
