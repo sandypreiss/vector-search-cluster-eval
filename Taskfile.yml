@@ -10,3 +10,6 @@ tasks:
   cluster:
     cmds:
       - python src/cluster.py
+  name:
+    cmds:
+      - python src/name.py
