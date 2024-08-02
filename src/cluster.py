@@ -5,7 +5,7 @@ import zarr
 
 if __name__ == "__main__":
 
-    embeddings = zarr.load("data/embeddings.zarr")
+    embeddings = zarr.load("data/embeddings_reduced.zarr")
 
     n_clusters = [2, 3, 4, 5, 6, 7, 8]
     n_cluster_labels = {}
