@@ -151,11 +151,27 @@ def main(embedding_model_name: str, distance_threshold: float):
     metrics = calculate_metrics(docs_in_clusters, query_results)
     cluster_names = cluster_names.join(metrics, on="index")
 
-    results = cluster_names.group_by("model").agg(
-        pl.col("precision").mean().alias("mean_precision"),
-        pl.col("recall").mean().alias("mean_recall"),
-        pl.col("f1").mean().alias("mean_f1"),
+    macro_avg = cluster_names.group_by("model").agg(
+        pl.col("precision").mean().alias("macro_avg_precision"),
+        pl.col("recall").mean().alias("macro_avg_recall"),
+        pl.col("f1").mean().alias("macro_avg_f1"),
     )
+
+    cluster_names = cluster_names.with_columns(
+        (pl.col("count") / len(df)).alias("weight")
+    )
+    cluster_names = cluster_names.with_columns(
+        (pl.col("precision") * pl.col("weight")).alias("weighted_precision"),
+        (pl.col("recall") * pl.col("weight")).alias("weighted_recall"),
+        (pl.col("f1") * pl.col("weight")).alias("weighted_f1"),
+    )
+    weighted_avg = cluster_names.group_by("model").agg(
+        pl.col("weighted_precision").sum().alias("weighted_avg_precision"),
+        pl.col("weighted_recall").sum().alias("weighted_avg_recall"),
+        pl.col("weighted_f1").sum().alias("weighted_avg_f1"),
+    )
+
+    results = macro_avg.join(weighted_avg, on="model")
 
     cluster_names.write_parquet("data/scored_cluster_names.parquet")
     results.write_parquet("data/eval_results.parquet")
