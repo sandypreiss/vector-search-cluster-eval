@@ -13,3 +13,6 @@ tasks:
   name:
     cmds:
       - python src/name.py
+  evaluate:
+    cmds:
+      - python src/evaluate.py --embedding_model_name=Snowflake/snowflake-arctic-embed-m --distance_threshold=0.9

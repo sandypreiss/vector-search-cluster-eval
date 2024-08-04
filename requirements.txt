@@ -196,6 +196,8 @@ sniffio==1.3.1
     #   openai
 sympy==1.12.1
     # via torch
+tenacity==9.0.0
+    # via -r requirements.in
 termcolor==2.4.0
     # via fire
 threadpoolctl==3.5.0

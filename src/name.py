@@ -5,6 +5,11 @@ from openai import OpenAI
 import polars as pl
 import tiktoken
 from jinja2 import Template
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_random_exponential,
+)
 
 
 def get_n_to_sample(
@@ -45,6 +50,10 @@ def make_prompt_template() -> Template:
     describing the common topic of the articles. 
     Don't use filler words like "various topics in...", "diverse...", etc.
     Don't include preludes like "The common topic is..."
+    Avoid being overly specific. Don't include topics unless the large majority
+    of the articles are about that topic. 
+    Avoid compound names that consist of two topics joined by "and" - 
+    strive for a name that includes both of those topics instead. 
     """
     return Template(template)
 
@@ -57,11 +66,33 @@ def sample_docs(docs: pl.Series, n: int) -> pl.Series:
     return sampled_docs.to_list()
 
 
+@retry(
+    wait=wait_random_exponential(min=2, max=60),
+    stop=stop_after_attempt(5),
+    reraise=True,
+)
+def complete_chat_with_retry(
+    client: OpenAI, model: str, system_prompt: str, user_prompt: str
+) -> str:
+    """
+    Wrapper for OpenAI chat response implementing retry with exponential
+    backoff using tenacity
+    """
+    completion = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+    )
+    return completion.choices[0].message.content
+
+
 if __name__ == "__main__":
 
     MODEL = "gpt-4o-2024-05-13"
-    # Using half of this model's context window to cut cost and save time
-    TOKEN_TARGET = 64_000
+    # Staying well under this model's 128k context window
+    TOKEN_TARGET = 100_000
     SYSTEM_PROMPT = """You are an expert journalism librarian.
     Your job is to review groups of news articles and identify their common topic.
     """
@@ -71,7 +102,7 @@ if __name__ == "__main__":
 
     n_to_sample = get_n_to_sample(
         model=MODEL,
-        token_target=10_000,
+        token_target=TOKEN_TARGET,
         df=df,
         text_col="text",
     )
@@ -92,14 +123,12 @@ if __name__ == "__main__":
             docs = df.filter(df[cluster_col] == cluster)["text"]
             sample = sample_docs(docs, n_to_sample)
             prompt = prompt_template.render(sample=sample)
-            completion = client.chat.completions.create(
+            name = complete_chat_with_retry(
+                client=client,
                 model=MODEL,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": prompt},
-                ],
+                system_prompt=SYSTEM_PROMPT,
+                user_prompt=prompt,
             )
-            name = completion.choices[0].message.content
             cluster_names[cluster] = name
         all_names[cluster_col.replace(cluster_col_prefix, "")] = cluster_names
 
